@@ -147,15 +147,12 @@ export async function compile(rootDir: string, options: CompileOptions = {}): Pr
   console.log('╠══════════════════════════════════════════════════════╣');
   console.log('║   Outputs:                                              ║');
   console.log('║     • .yadasmith  (workflow state)                    ║');
-  console.log('║     • .yadamap    (graph documentation)              ║');
-  console.log('║     • graph.svg   (visual dependency graph)          ║');
   console.log('╚══════════════════════════════════════════════════════╝');
 
   console.log('');
   console.log('💡 Next Steps:');
-  console.log('   1. Review the dependency graph (graph.svg)');
-  console.log('   2. Use "yada status" to track progress');
-  console.log('   3. Use "yada --mark <id>" to mark tasks as done');
+  console.log('   1. Use "yada status" to track progress');
+  console.log('   2. Use "yada --mark <id>" to mark tasks as done');
   console.log('');
 }
 

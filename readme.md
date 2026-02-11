@@ -143,8 +143,6 @@ yada compile --force
 
 Output Files Generated:
 - `.yadasmith` - Compiled workflow state
-- `graph.svg` - Visual dependency graph
-- `.yadamap` - Graph documentation
 
 ### Status Command
 

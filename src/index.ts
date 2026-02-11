@@ -13,6 +13,3 @@ export { readYadasmith, writeYadasmith, getStatus } from './core/state';
 // CLI
 export { runCli } from './cli/index';
 
-// Version
-export const VERSION = '1.0.0';
-

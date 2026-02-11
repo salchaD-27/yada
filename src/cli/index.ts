@@ -54,7 +54,7 @@ function showVersion(): void {
  */
 function showHelp(): void {
   console.log(`
-YADA (Yet Another Designing Assistant) - Workflow Graph Engine
+YADA (Yet Another Designing Assistant) - Workflow Manager
 
 Usage: yada [options] [command]
 
@@ -169,3 +169,4 @@ export function runCli(args: string[]): void {
       process.exit(1);
   }
 }
+

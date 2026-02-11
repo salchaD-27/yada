@@ -63,8 +63,7 @@ function formatStatus(yadasmith: Yadasmith): void {
   }
 
   console.log('\n' + '─'.repeat(52));
-  console.log('💡 Tip: Use "yada --mark <task_id>" to mark a task as done');
-  console.log('💡 Use "yada compile -V" to regenerate the graph visualization\n');
+  console.log('💡 Tip: Use "yada --mark <task_id>" to mark a task as done\n');
 }
 
 /**
