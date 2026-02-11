@@ -134,7 +134,7 @@ export function runCli(args: string[]): void {
       continue;
     }
 
-    if (arg === 'compile' || arg === 'status' || arg === 'reset') {
+    if (arg === 'compile' || arg === 'status' || arg === 'reset' || arg === 'check') {
       options.command = arg;
       continue;
     }

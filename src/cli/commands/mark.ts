@@ -14,22 +14,46 @@ export function mark(rootDir: string, options: MarkOptions): void {
   const { id, verbose = false } = options;
 
   if (!id) {
-    console.error('Error: Task ID required');
-    console.error('Usage: yada --mark <task_id>');
+    console.log('');
+    console.log('╔══════════════════════════════════════════════════════╗');
+    console.log('║                     ⚠️  Error                         ║');
+    console.log('╠══════════════════════════════════════════════════════╣');
+    console.log('║   Task ID is required                                ║');
+    console.log('║                                                      ║');
+    console.log('║   Usage: yada --mark <task_id>                       ║');
+    console.log('║                                                      ║');
+    console.log('║   Run "yada status" to see available tasks           ║');
+    console.log('╚══════════════════════════════════════════════════════╝');
+    console.log('');
     process.exit(1);
   }
 
   // Check if task exists
   const yadasmith = readYadasmith(rootDir);
   if (!yadasmith) {
-    console.error('Error: No .yadasmith file found. Run "yada compile" first.');
+    console.log('');
+    console.log('╔══════════════════════════════════════════════════════╗');
+    console.log('║                     ⚠️  Error                         ║');
+    console.log('╠══════════════════════════════════════════════════════╣');
+    console.log('║   No workflow found                                  ║');
+    console.log('║                                                      ║');
+    console.log('║   Run "yada compile" first to generate workflow       ║');
+    console.log('╚══════════════════════════════════════════════════════╝');
+    console.log('');
     process.exit(1);
   }
 
   const task = getTaskById(yadasmith, id);
   if (!task) {
-    console.error(`Error: Task not found: ${id}`);
-    console.error('Run "yada status" to see available tasks.');
+    console.log('');
+    console.log('╔══════════════════════════════════════════════════════╗');
+    console.log('║                     ⚠️  Error                         ║');
+    console.log('╠══════════════════════════════════════════════════════╣');
+    console.log(`║   Task not found: ${id.padEnd(33)}║`);
+    console.log('║                                                      ║');
+    console.log('║   Run "yada status" to see available tasks           ║');
+    console.log('╚══════════════════════════════════════════════════════╝');
+    console.log('');
     process.exit(1);
   }
 
@@ -37,10 +61,37 @@ export function mark(rootDir: string, options: MarkOptions): void {
   const result = markOne(rootDir, id, verbose);
 
   if (!result.valid) {
-    console.error('Errors:');
-    result.errors.forEach(e => console.error(`  ✗ ${e}`));
+    console.log('');
+    console.log('╔══════════════════════════════════════════════════════╗');
+    console.log('║                     ❌ Error                          ║');
+    console.log('╠══════════════════════════════════════════════════════╣');
+    result.errors.forEach(e => console.log(`║   ${e.padEnd(46)}║`));
+    console.log('╚══════════════════════════════════════════════════════╝');
+    console.log('');
     process.exit(1);
   }
 
-  console.log(`✓ Marked '${id}' as completed`);
+  // Success output
+  console.log('');
+  console.log('╔══════════════════════════════════════════════════════╗');
+  console.log('║               ✅ Task Marked Complete                 ║');
+  console.log('╠══════════════════════════════════════════════════════╣');
+  console.log(`║   Task:    ${task.ref.padEnd(35)}║`);
+  console.log(`║   ID:      ${task.id.padEnd(35)}║`);
+  console.log(`║   Level:   ${String(task.level).padEnd(35)}║`);
+  console.log('╚══════════════════════════════════════════════════════╝');
+  console.log('');
+
+  // Show next task hint
+  const nextTask = yadasmith.levels
+    .flatMap(l => l.dps)
+    .find(d => d.status === 'pending');
+
+  if (nextTask) {
+    console.log(`💡 Next: Run "yada --mark ${nextTask.id}" to mark next task`);
+  } else {
+    console.log('🎉 All tasks completed! Great job!');
+  }
+  console.log('');
 }
+

@@ -1,0 +1,26 @@
+flowchart TD
+    %% YADA Dependency Graph
+    %% Generated at: 2026-02-11T18:29:58.855Z
+    %% Nodes represent Design Prescriptions
+    %% Edges represent dependencies
+
+    %% Node Styles
+    classDef pending fill:#f9f9f9,stroke:#333,stroke-width:1px;
+    classDef module fill:#e3f2fd,stroke:#1976d2,stroke-width:2px;
+    classDef standard fill:#fff3e0,stroke:#f57c00,stroke-width:2px;
+    classDef completed fill:#e8f5e9,stroke:#388e3c,stroke-width:2px;
+
+    02-architecture["architecture"]:::module
+    03-implementation["implementation"]:::module
+    01-setup["setup"]:::module
+
+
+
+    %% Legend
+    subgraph Legend ["Legend"]
+        direction LR
+        M1[(Module)]:::module
+        S1[Standard]:::standard
+        P[Pending]:::pending
+        C[Completed]:::completed
+    end
