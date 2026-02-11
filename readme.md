@@ -1,5 +1,6 @@
 # YADA
 ![Lavender](YADA.png)
+
 **YADA (Yet Another Devising Assistant)** is a deterministic DAG orchestration library with CLI interface. It compiles declarative Design Prescriptions (DPs) into executable workflow graphs.
 
 ### Key Features
