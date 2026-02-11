@@ -1,0 +1,17 @@
+version: 1.0.0
+compiledAt: '2026-02-11T18:08:24.494Z'
+levels:
+  - level: 1
+    dps:
+      - ref: implementation
+        id: 03-implementation
+        status: pending
+        level: 1
+      - ref: architecture
+        id: 02-architecture
+        status: pending
+        level: 1
+      - ref: setup
+        id: 01-setup
+        status: pending
+        level: 1
