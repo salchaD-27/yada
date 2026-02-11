@@ -1,6 +1,6 @@
 {
   "name": "yada-kit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Yet Another Devising Assistant - Declarative workflow graph engine with deterministic compilation and state tracking",
   "license": "ISC",
   "author": "",
