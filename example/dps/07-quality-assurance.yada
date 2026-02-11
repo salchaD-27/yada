@@ -1,0 +1,87 @@
+
+name: quality-assurance
+nature: standard
+phase: testing
+priority: 60
+description: |
+  /*
+    Quality Assurance - Testing and validation
+    Ensures product quality through comprehensive testing
+  */
+dependencies:
+  - 01-project-foundation
+  - 04-backend-core
+subdps:
+  order: false
+  1:
+    name: test-automation
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Implement automated testing infrastructure
+      */
+    workflow:
+      - setup Jest/Mocha
+      - configure Cypress E2E
+      - create test fixtures
+    intents:
+      - Unit tests running
+      - E2E tests configured
+  2:
+    name: integration-testing
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Implement integration tests for services
+      */
+    intents:
+      - API tests running
+      - Service tests passing
+  3:
+    name: performance-testing
+    type: dependency
+    nature: optional
+    description: |
+      /*
+        Implement performance and load testing
+      */
+    workflow:
+      - setup k6 load tests
+      - create performance baselines
+      - configure load scenarios
+    intents:
+      - Load tests created
+      - Baselines established
+  4:
+    name: security-testing
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Implement security vulnerability testing
+      */
+    workflow:
+      - setup SAST tools
+      - configure DAST scanning
+      - implement dependency checks
+    intents:
+      - Security scans configured
+      - Vulnerabilities tracked
+  5:
+    name: chaos-engineering
+    type: dependency
+    nature: optional
+    description: |
+      /*
+        Implement chaos engineering practices
+      */
+    workflow:
+      - setup Chaos Mesh
+      - create failure scenarios
+      - document recovery procedures
+    intents:
+      - Chaos scenarios created
+      - Recovery tested
+

@@ -1,0 +1,63 @@
+
+name: architecture-design
+nature: module
+phase: design
+priority: 2
+description: |
+  /*
+    Architecture Design - System design and planning
+    Creates technical specifications and architectural decisions
+  */
+dependencies:
+  - 01-project-foundation
+subdps:
+  order: true
+  1:
+    name: system-architecture
+    type: specification
+    description: |
+      /*
+        Define overall system architecture and design principles
+      */
+    workflow:
+      - create architecture diagram
+      - define system boundaries
+      - document architectural decisions
+    intents:
+      - Architecture approved
+      - Design principles documented
+  2:
+    name: api-design
+    type: specification
+    description: |
+      /*
+        Design RESTful API specifications
+      */
+    workflow:
+      - define API endpoints
+      - create OpenAPI specs
+      - document rate limits
+    intents:
+      - APIs documented
+      - Contract defined
+  3:
+    name: data-layer-architecture
+    type: specification
+    description: |
+      /*
+        Design database schema and data flow
+      */
+    intents:
+      - Schema designed
+      - Data flow documented
+  4:
+    name: infrastructure-architecture
+    type: specification
+    description: |
+      /*
+        Design cloud infrastructure and deployment architecture
+      */
+    intents:
+      - Cloud architecture designed
+      - Deployment strategy defined
+

@@ -1,0 +1,60 @@
+
+name: monitoring-observability
+nature: module
+phase: operations
+priority: 62
+description: |
+  /*
+    Monitoring & Observability - System visibility
+    Enhances system monitoring and observability
+  */
+dependencies:
+  - 03-infrastructure-setup
+  - 04-backend-core
+subdps:
+  order: false
+  1:
+    name: distributed-tracing
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Implement distributed tracing
+      */
+    intents:
+      - Jaeger deployed
+      - Traces flowing
+  2:
+    name: alerting-rules
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Configure comprehensive alerting rules
+      */
+    intents:
+      - Alerts configured
+      - On-call rotation ready
+  3:
+    name: sla-dashboard
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Create SLA monitoring dashboards
+      */
+    intents:
+      - SLA dashboards live
+      - SLO metrics visible
+  4:
+    name: log-aggregation
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Implement centralized log aggregation
+      */
+    intents:
+      - ELK stack configured
+      - Logs searchable
+

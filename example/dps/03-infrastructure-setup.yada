@@ -1,0 +1,79 @@
+
+name: infrastructure-setup
+nature: module
+phase: infrastructure
+priority: 3
+description: |
+  /*
+    Infrastructure Setup - Cloud and DevOps setup
+    Sets up cloud infrastructure and CI/CD pipelines
+  */
+dependencies:
+  - 01-project-foundation
+  - 02-architecture-design
+subdps:
+  order: true
+  1:
+    name: cloud-provisioning
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Provision cloud resources and infrastructure
+      */
+    workflow:
+      - setup AWS/GCP account
+      - configure VPC and networking
+      - create security groups
+    intents:
+      - Cloud account configured
+      - Network configured
+  2:
+    name: kubernetes-cluster
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Deploy and configure Kubernetes cluster
+      */
+    intents:
+      - K8s cluster running
+      - Nodes configured
+  3:
+    name: ci-cd-pipeline
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Set up continuous integration and deployment pipeline
+      */
+    workflow:
+      - configure GitHub Actions
+      - setup build stages
+      - configure deployment triggers
+    intents:
+      - CI/CD configured
+      - Builds automated
+  4:
+    name: database-provisioning
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Provision and configure database systems
+      */
+    intents:
+      - Databases provisioned
+      - Connection strings configured
+  5:
+    name: monitoring-stack
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Deploy monitoring and observability stack
+      */
+    intents:
+      - Prometheus deployed
+      - Grafana configured
+

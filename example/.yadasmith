@@ -1,17 +1,79 @@
 version: 1.0.0
-compiledAt: '2026-02-11T18:47:24.641Z'
+compiledAt: '2026-02-11T19:14:52.304Z'
 levels:
   - level: 1
     dps:
-      - ref: implementation
-        id: 03-implementation
+      - ref: project-foundation
+        id: 01-project-foundation
         status: pending
         level: 1
-      - ref: architecture
-        id: 02-architecture
+      - ref: documentation-training
+        id: 10-documentation-training
         status: pending
         level: 1
-      - ref: setup
-        id: 01-setup
+  - level: 2
+    dps:
+      - ref: architecture-design
+        id: 02-architecture-design
         status: pending
-        level: 1
+        level: 2
+  - level: 3
+    dps:
+      - ref: infrastructure-setup
+        id: 03-infrastructure-setup
+        status: pending
+        level: 3
+  - level: 4
+    dps:
+      - ref: backend-core
+        id: 04-backend-core
+        status: pending
+        level: 4
+  - level: 5
+    dps:
+      - ref: security-hardening
+        id: 09-security-hardening
+        status: pending
+        level: 5
+      - ref: feature-modules
+        id: 05-feature-modules
+        status: pending
+        level: 5
+      - ref: frontend-development
+        id: 06-frontend-development
+        status: pending
+        level: 5
+      - ref: monitoring-observability
+        id: 14-monitoring-observability
+        status: pending
+        level: 5
+      - ref: quality-assurance
+        id: 07-quality-assurance
+        status: pending
+        level: 5
+      - ref: performance-optimization
+        id: 12-performance-optimization
+        status: pending
+        level: 5
+  - level: 6
+    dps:
+      - ref: integrations
+        id: 11-integrations
+        status: pending
+        level: 6
+      - ref: deployment-release
+        id: 08-deployment-release
+        status: pending
+        level: 6
+  - level: 7
+    dps:
+      - ref: disaster-recovery
+        id: 13-disaster-recovery
+        status: pending
+        level: 7
+  - level: 8
+    dps:
+      - ref: compliance-governance
+        id: 15-compliance-governance
+        status: pending
+        level: 8

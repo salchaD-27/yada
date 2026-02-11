@@ -1,0 +1,71 @@
+
+name: feature-modules
+nature: standard
+phase: development
+priority: 70
+description: |
+  /*
+    Feature Modules - Domain-specific functionality
+    Implements core business features
+  */
+dependencies:
+  - 04-backend-core
+subdps:
+  order: false
+  1:
+    name: order-management
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Implement order processing module
+      */
+    workflow:
+      - create order domain
+      - implement order workflow
+      - setup payment integration
+    intents:
+      - Order service operational
+      - Payment flow working
+  2:
+    name: inventory-service
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Implement inventory tracking system
+      */
+    intents:
+      - Inventory tracked
+      - Stock levels accurate
+  3:
+    name: notification-system
+    type: dependency
+    nature: optional
+    description: |
+      /*
+        Implement multi-channel notification service
+      */
+    workflow:
+      - create email service
+      - implement SMS notifications
+      - setup push notifications
+    intents:
+      - Email service running
+      - SMS notifications working
+  4:
+    name: search-engine
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Implement search functionality with Elasticsearch
+      */
+    workflow:
+      - setup Elasticsearch
+      - create search index
+      - implement search API
+    intents:
+      - Search operational
+      - Index populated
+

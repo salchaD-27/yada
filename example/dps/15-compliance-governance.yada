@@ -1,0 +1,60 @@
+
+name: compliance-governance
+nature: module
+phase: compliance
+priority: 40
+description: |
+  /*
+    Compliance & Governance - Regulatory compliance
+    Ensures regulatory compliance and governance
+  */
+dependencies:
+  - 09-security-hardening
+  - 13-disaster-recovery
+subdps:
+  order: false
+  1:
+    name: gdpr-compliance
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Implement GDPR compliance measures
+      */
+    intents:
+      - Data deletion working
+      - Consent management active
+  2:
+    name: access-governance
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Implement access governance policies
+      */
+    intents:
+      - Access reviews scheduled
+      - Policy enforcement active
+  3:
+    name: data-classification
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Implement data classification system
+      */
+    intents:
+      - Data classified
+      - Policies enforced
+  4:
+    name: compliance-auditing
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Implement compliance auditing
+      */
+    intents:
+      - Audit trails complete
+      - Reports generated
+

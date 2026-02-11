@@ -1,0 +1,68 @@
+
+name: backend-core
+nature: standard
+phase: development
+priority: 4
+description: |
+  /*
+    Backend Core Development - API and services
+    Implements the core business logic and API endpoints
+  */
+dependencies:
+  - 02-architecture-design
+  - 03-infrastructure-setup
+subdps:
+  order: false
+  1:
+    name: database-migrations
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Create and run database migrations
+      */
+    intents:
+      - Migrations created
+      - Schema applied
+  2:
+    name: auth-service
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Implement authentication and authorization service
+      */
+    workflow:
+      - implement JWT authentication
+      - create OAuth2 providers
+      - setup RBAC system
+    intents:
+      - Auth implemented
+      - RBAC configured
+  3:
+    name: user-service
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Implement user management service
+      */
+    intents:
+      - User CRUD operational
+      - Profile management ready
+  4:
+    name: api-gateway
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Configure API gateway and routing
+      */
+    workflow:
+      - configure Kong/Apigee
+      - setup rate limiting
+      - configure CORS policies
+    intents:
+      - Gateway configured
+      - Routes active
+

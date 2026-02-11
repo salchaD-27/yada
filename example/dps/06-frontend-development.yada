@@ -1,0 +1,70 @@
+
+name: frontend-development
+nature: standard
+phase: development
+priority: 65
+description: |
+  /*
+    Frontend Development - Web and mobile clients
+    Implements user interface and client applications
+  */
+dependencies:
+  - 04-backend-core
+subdps:
+  order: false
+  1:
+    name: design-system
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Create and maintain design system
+      */
+    workflow:
+      - create component library
+      - define design tokens
+      - setup Storybook documentation
+    intents:
+      - Components documented
+      - Design tokens defined
+  2:
+    name: web-app
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Implement main web application
+      */
+    workflow:
+      - setup React/Next.js app
+      - implement routing
+      - create main pages
+    intents:
+      - Web app running
+      - Routes configured
+  3:
+    name: admin-dashboard
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Build admin management interface
+      */
+    intents:
+      - Admin panel operational
+      - User management ready
+  4:
+    name: mobile-app
+    type: dependency
+    nature: optional
+    description: |
+      /*
+        Develop mobile application
+      */
+    workflow:
+      - setup React Native
+      - implement core features
+    intents:
+      - Mobile app built
+      - Core features working
+

@@ -1,0 +1,76 @@
+
+name: deployment-release
+nature: standard
+phase: deployment
+priority: 55
+description: |
+  /*
+    Deployment & Release - Production deployment
+    Manages the release process to production
+  */
+dependencies:
+  - 03-infrastructure-setup
+  - 04-backend-core
+  - 07-quality-assurance
+subdps:
+  order: false
+  1:
+    name: staging-environment
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Configure staging environment for pre-production testing
+      */
+    intents:
+      - Staging deployed
+      - Ready for QA
+  2:
+    name: production-environment
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Configure production environment
+      */
+    intents:
+      - Production ready
+      - SLAs verified
+  3:
+    name: blue-green-deployment
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Implement blue-green deployment strategy
+      */
+    workflow:
+      - create blue environment
+      - create green environment
+      - configure load balancer
+    intents:
+      - Blue-green ready
+      - Zero-downtime capable
+  4:
+    name: canary-release
+    type: dependency
+    nature: optional
+    description: |
+      /*
+        Implement canary deployment for gradual rollouts
+      */
+    intents:
+      - Canary configured
+      - Traffic splitting ready
+  5:
+    name: rollback-procedures
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Document and test rollback procedures
+      */
+    intents:
+      - Rollback documented
+      - Tested and verified
+

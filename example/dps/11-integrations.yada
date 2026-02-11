@@ -1,0 +1,60 @@
+
+name: integrations
+nature: standard
+phase: integration
+priority: 58
+description: |
+  /*
+    Third-Party Integrations - External service connections
+    Connects to external services and APIs
+  */
+dependencies:
+  - 05-feature-modules
+  - 03-infrastructure-setup
+subdps:
+  order: false
+  1:
+    name: payment-gateway
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Integrate payment processing gateway
+      */
+    intents:
+      - Stripe integrated
+      - PayPal configured
+  2:
+    name: shipping-provider
+    type: dependency
+    nature: optional
+    description: |
+      /*
+        Integrate shipping provider APIs
+      */
+    intents:
+      - Shipping rates available
+      - Tracking integrated
+  3:
+    name: analytics-platform
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Implement analytics and tracking
+      */
+    intents:
+      - GA configured
+      - Custom events tracked
+  4:
+    name: crm-integration
+    type: dependency
+    nature: optional
+    description: |
+      /*
+        Integrate CRM system
+      */
+    intents:
+      - CRM sync active
+      - Contact data flowing
+

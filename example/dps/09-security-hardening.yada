@@ -1,0 +1,60 @@
+
+name: security-hardening
+nature: module
+phase: security
+priority: 75
+description: |
+  /*
+    Security Hardening - Security implementation
+    Implements security measures across the system
+  */
+dependencies:
+  - 04-backend-core
+  - 03-infrastructure-setup
+subdps:
+  order: false
+  1:
+    name: identity-management
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Implement enterprise identity management
+      */
+    intents:
+      - SSO configured
+      - MFA enabled
+  2:
+    name: data-encryption
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Implement encryption at rest and in transit
+      */
+    intents:
+      - Data encrypted at rest
+      - TLS configured
+  3:
+    name: api-security
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Harden API security measures
+      */
+    intents:
+      - API security hardened
+      - Rate limiting active
+  4:
+    name: audit-logging
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Implement comprehensive audit logging
+      */
+    intents:
+      - Audit logs active
+      - Compliance ready
+

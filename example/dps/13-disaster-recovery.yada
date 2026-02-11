@@ -1,0 +1,64 @@
+
+name: disaster-recovery
+nature: module
+phase: operations
+priority: 45
+description: |
+  /*
+    Disaster Recovery - Business continuity
+    Implements DR procedures and backup strategies
+  */
+dependencies:
+  - 03-infrastructure-setup
+  - 08-deployment-release
+subdps:
+  order: false
+  1:
+    name: backup-strategy
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Implement comprehensive backup strategy
+      */
+    workflow:
+      - configure database backups
+      - setup file backups
+      - create backup retention policy
+    intents:
+      - Backups automated
+      - Retention policy active
+  2:
+    name: disaster-recovery-plan
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Document and test disaster recovery procedures
+      */
+    intents:
+      - DR plan documented
+      - RTO/RPO defined
+  3:
+    name: failover-testing
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Test failover procedures
+      */
+    intents:
+      - Failover tested
+      - RTO verified
+  4:
+    name: data-archival
+    type: dependency
+    nature: optional
+    description: |
+      /*
+        Implement data archival strategy
+      */
+    intents:
+      - Archival configured
+      - Compliance met
+

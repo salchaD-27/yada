@@ -1,0 +1,50 @@
+
+name: documentation-training
+nature: standard
+phase: operations
+priority: 50
+description: |
+  /*
+    Documentation & Training - Knowledge management
+    Creates comprehensive documentation and training materials
+  */
+subdps:
+  order: false
+  1:
+    name: technical-docs
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Create comprehensive technical documentation
+      */
+    workflow:
+      - create architecture docs
+      - document API endpoints
+      - write runbooks
+    intents:
+      - Docs published
+      - Runbooks available
+  2:
+    name: user-guides
+    type: dependency
+    nature: required
+    description: |
+      /*
+        Create user-facing documentation
+      */
+    intents:
+      - User guides ready
+      - FAQ published
+  3:
+    name: developer-onboarding
+    type: dependency
+    nature: optional
+    description: |
+      /*
+        Create developer onboarding materials
+      */
+    intents:
+      - Onboarding guide ready
+      - Local environment setup automated
+

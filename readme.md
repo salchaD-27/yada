@@ -1,375 +1,384 @@
-i am making a planning module, which works on simple graph concept i.e. 'tasks' are defined as per dependencies and thus the code logic infers wht is dependent on wht and thus organizes a workflow
+# YADA - Complete Usage Guide
 
+## What is YADA?
 
+**YADA (Yet Another Designing Assistant)** is a deterministic DAG orchestration library with CLI interface. It compiles declarative Design Prescriptions (DPs) into executable workflow graphs.
 
-YADA (Yet Another Designing Assistant)
-project/yada/
-|——.yadasmith
-|——dps/
-	|——dp1.yada
-	|——dp2.yada
-	|——dp3.yada
+### Key Features
 
-In project root: ‘yada compile’
-.yadasmith: holds final orchestrated sequence for all dps (output of ‘yada compile’)
-1. ref: _ (first dp in whole workflow)id: _status: _
-2. ref: _ (next logical dependent/respective priority based dp in whole workflow)id: _status: _
-3. …
+- Production-ready npm package - Install via `npm install yada`
+- Dependency Graph Engine - Parses and resolves complex dependencies
+- Deterministic Compilation - Predictable execution order based on priority
+- Parallel Level Grouping - Identifies parallelizable tasks
+- State Persistence - Tracks progress with `.yadasmith` file
+- CLI & Programmatic API - Use as CLI tool or import as library
 
-Design Prescriptions (DPs): (_.yada dp filename: independent reference to respective dp)
-name: _ (dp identifier)
-nature: _ (‘module’, ‘standard’)
-phase: _ (optional explicit phase classification)
-priority: _ (dp urgency)(helps resolving yada tree forks)
-description: 
-	/* 
-		_ 
-	*/
+---
+
+## Installation
+
+```bash
+# From source
+cd /Users/salchad27/Desktop/TAG/yada
+npm install
+npm run build
+
+# Make globally available
+npm link
+
+# Now use from anywhere
+yada --help
+```
+
+---
+
+## Project Structure
+
+```
+your-project/
+├── dps/                          # Design Prescriptions directory
+│   ├── 01-setup.yada
+│   ├── 02-architecture.yada
+│   └── 03-implementation.yada
+├── .yadasmith                    # Compiled workflow (auto-generated)
+├── graph.svg                      # Visual dependency graph (auto-generated)
+└── .yadamap                      # Graph documentation (auto-generated)
+```
+
+---
+
+## Creating Design Prescriptions (DPs)
+
+### Basic DP Structure
+
+```yaml
+name: my-feature
+nature: standard
+phase: development
+priority: 50
+description: |
+  /* Description of what this DP accomplishes */
+
+dependencies:                    # External DP dependencies
+  - previous-feature
+
 subdps:
-	order: false/true (specifies if subdps should follow defined numerical interdependency)
-	1:
-		name: _ (subdp identifier)
-		type: _ (dp type)(‘specification’, ‘dependency’)
+  order: false                   # true = chain subdps 1→2→3
+  1:
+    name: sub-feature-1
+    type: specification          # specification = has workflow steps
+    description: |
+      /* Description */
+    workflow:
+      - step 1
+      - step 2
+    intents:
+      - Goal achieved
+
+  2:
+    name: sub-feature-2
+    type: dependency            # dependency = has prerequisites
+    nature: required             # optional | required
+    description: |
+      /* Description */
+    dependencies:
+      - sub-feature-1           # Local subdp dependency
+    intents:
+      - Another goal
+```
+
+### DP Fields Reference
+
+| Field | Required | Values | Description |
+|-------|----------|--------|-------------|
+| `name` | Yes | string | Human-readable identifier |
+| `nature` | Yes | `module` \| `standard` | Module = foundational, Standard = regular |
+| `phase` | No | string | Phase classification |
+| `priority` | Yes | number (0-100) | Higher = executed first at same level |
+| `description` | Yes | string | What this DP accomplishes |
+| `dependencies` | No | DP IDs | External DP references |
+| `subdps.order` | Yes | boolean | Chain subdps numerically? |
+| `subdp.type` | Yes | `specification` \| `dependency` | Specification = has workflow, Dependency = has deps |
+| `subdp.nature` | No | `optional` \| `required` | Only for type=dependency |
+| `subdp.workflow` | No | string[] | Steps (only for type=specification) |
+| `subdp.dependencies` | No | string[] | Prerequisites (for type=dependency) |
+| `subdp.intents` | No | string[] | Goals/intended outcomes |
+
+### Naming Convention
+
+IMPORTANT: DP filenames MUST use numbered IDs:
+
+```
+01-project-foundation.yada
+02-architecture-design.yada
+03-infrastructure-setup.yada
+```
+
+Then reference them with those IDs:
+```yaml
+dependencies:
+  - 01-project-foundation    # Correct
+  - project-foundation        # Will fail
+```
+
+---
+
+## CLI Commands
+
+### Compile Command
+
+Parses all DPs, validates dependencies, builds graph, writes `.yadasmith`.
+
+```bash
+# Basic compilation
+yada compile
+
+# Verbose output
+yada compile --verbose
+yada compile -V
+
+# Force recompile (overwrite existing)
+yada compile --force
+```
+
+Output Files Generated:
+- `.yadasmith` - Compiled workflow state
+- `graph.svg` - Visual dependency graph
+- `.yadamap` - Graph documentation
+
+### Status Command
+
+Shows current workflow progress.
+
+```bash
+# Basic status
+yada status
+
+# Verbose output
+yada status --verbose
+yada status -V
+
+# JSON output (for scripts)
+yada status --json
+```
+
+### Mark Command
+
+Mark a task as completed.
 
-		description: 
-			/* 
-				_
-			 */
-		workflow: (steps/sequence notes, if type=‘specification’)
-			- _
-		dependencies:
-			- _
-		intents: (intended achievements/goal states)
-			- _
-	2:
-		name: _ (subdp identifier)
-		type: _ (dp type)(‘specification’, ‘dependency’)
-		nature: _ (‘optional’, ’required’)(defined for only type=‘dependency’)
-		description: 
-			/* 
-				_
-			 */
-		dependencies: (prerequisites, if type=‘dependency’)
-			- _
-		intents: (intended achievements/goal states)
-			- _
+```bash
+# Mark specific task
+yada --mark 01-project-foundation
+```
 
+How it works:
+- Marks the specified task as `completed`
+- Tasks before it in the execution order remain completed
+- Tasks after it remain `pending`
 
+### Check Commands
 
-yada -v : yada version
-yada --help : cli cmds help
-yada --check-dp <dpname.yada> : checking for specified dp for errors and all required dependencies implemented
-yada --check-dps : checking for all dps
-yada —mark <dp_id> : marks till respective dp_id as completed
-yada status : lists current status of completed/pending dps
-yada reset : resets all completed dps
+Validate DPs for errors and missing dependencies.
 
+```bash
+# Check all DPs
+yada --check-dps
 
+# Check specific DP
+yada --check-dp 01-setup.yada
 
-if u understand wht im trying to do
+# Check with verbose output
+yada --check-dps --verbose
+```
 
-Yes — I understand exactly what you’re building.
+What it validates:
+- Required fields present
+- Dependencies exist
+- No circular dependencies
+- Subdp types valid
+- Priority values valid
 
-You’re designing a dependency-driven orchestration engine that compiles modular “Design Prescriptions” (DPs) into a single executable workflow graph.
+### Reset Command
 
-Not a task list.
+Reset all tasks to pending.
 
-Not just a CLI.
+```bash
+# Reset with confirmation
+yada reset
 
-A graph compiler for structured execution logic.
+# Force reset (skip confirmation)
+yada reset --force
+```
 
-What Your System Actually Is
+### Help Command
 
-Conceptually, YADA is:
+```bash
+yada --help
+yada -h
+```
 
-A deterministic workflow planner that resolves dependency graphs into a linearized execution order with state tracking.
+### Version Command
 
-You’re defining:
+```bash
+yada --version
+yada -v
+```
 
-Nodes → DPs
+---
 
-Edges → dependencies
+## Programmatic API
 
-Subgraphs → subdps
+### Import YADA as Library
 
-Graph resolution → yada compile
+```typescript
+import {
+  parseAll,
+  validateAll,
+  resolve,
+  readYadasmith,
+  writeYadasmith,
+  getStatus,
+  markOne,
+  resetAll
+} from 'yada';
+```
 
-Execution tracking → status + mark
+### Usage Examples
 
-Validation → check-dp / check-dps
+#### Compile Workflow
 
-And .yadasmith becomes the compiled DAG flattened into a valid execution sequence.
+```typescript
+import { parseAll, validateAll, resolve, writeYadasmith } from 'yada';
 
-Structural Breakdown
-1️⃣ DPs = Graph Nodes
+const rootDir = './my-project';
 
-Each .yada file is a node containing:
+// 1. Parse all DPs
+const parseResult = parseAll(rootDir);
+if (parseResult.errors.length > 0) {
+  console.error('Parse errors:', parseResult.errors);
+  process.exit(1);
+}
 
-metadata (name, phase, priority)
+// 2. Validate DPs
+const validationResult = validateAll(parseResult.dps);
+if (!validationResult.valid) {
+  console.error('Validation errors:', validationResult.errors);
+  process.exit(1);
+}
 
-subdps (internal graph)
+// 3. Resolve graph
+const resolveResult = resolve(parseResult.dps, true);
 
-dependency references (external graph edges)
+// 4. Write output
+writeYadasmith(rootDir, resolveResult.yadasmith);
 
-So each DP is a mini-graph.
+console.log(`Compiled ${resolveResult.yadasmith.levels.length} levels`);
+```
 
-2️⃣ Two Dependency Layers
+#### Check Task Status
 
-You actually have two dependency levels:
+```typescript
+import { readYadasmith, getStatus, getTaskById } from 'yada';
 
-A) Inter-DP Dependencies
+const rootDir = './my-project';
+const status = getStatus(rootDir);
 
-DP depends on other DP(s).
+console.log(`${status.completed}/${status.total} tasks completed`);
 
-Example:
+if (status.nextTask) {
+  console.log('Next:', status.nextTask.ref);
+}
+```
 
-dp3 depends on dp1
+---
 
-B) Intra-DP Dependencies
+## Dependency Resolution Logic
 
-Subdps depend on:
+### How Levels Are Calculated
 
-other subdps (if order=true or explicit dependencies)
+1. Build Graph - Create adjacency list from DPs
+2. Detect Cycles - Fail if circular dependencies found
+3. Calculate In-Degrees - Count dependencies per node
+4. Start with Level 1 - Nodes with no dependencies
+5. BFS Propagation - Level = max(parent level) + 1
+6. Group by Level - Parallel tasks same level
 
-other DPs (via dependency type)
+### Priority Resolution
 
-So you’re dealing with:
+When multiple tasks are at the same level:
+1. Higher `priority` value executes first
+2. Alphabetical order as tiebreaker
 
-Graph of graphs.
+---
 
-3️⃣ yada compile
+## Best Practices
 
-This likely performs:
+1. Number Your DPs Sequentially
+2. Use Clear Priorities (90-100: Critical, 70-89: High, 50-69: Standard, 1-29: Optional)
+3. Group Related Subdps with `order: true`
+4. Document Intents Clearly
 
-Parse all dp files
+---
 
-Build adjacency list
+## Examples
 
-Validate:
+### Simple Example (3 DPs)
 
-missing dependencies
+```bash
+cd example
+yada compile --verbose
+yada status
+yada --mark 01-setup
+yada status
+```
 
-circular references
+### Enterprise Example (15 DPs)
 
-invalid types
+```bash
+cd example2
+yada compile --verbose
+yada status --json
+yada --check-dps
+yada --mark 01-project-foundation
+yada status
+```
 
-Resolve forks using:
+---
 
-priority
+## Troubleshooting
 
-possibly phase
+### "DP file not found"
+Ensure filename matches exactly (case-sensitive):
+```bash
+# Wrong
+yada --check-dp Setup.yada
+yada --check-dp 1-setup
 
-Topologically sort
+# Correct
+yada --check-dp 01-setup.yada
+```
 
-Output flattened ordered sequence into .yadasmith
+### "Dependency not found"
+Check that:
+1. Dependency DP file exists
+2. Filename uses numbered ID
+3. ID format matches exactly (e.g., `01-setup` not `setup`)
 
-So .yadasmith = compiled execution plan.
+### "Circular dependency detected"
+Review dependency chain and remove one of the circular references.
 
-4️⃣ State Tracking
+---
 
-.yadasmith stores:
+## Summary
 
-ref
-id
-status
+| Command | Purpose |
+|---------|---------|
+| `yada compile` | Parse & build workflow |
+| `yada status` | Show progress |
+| `yada --mark <id>` | Mark task complete |
+| `yada --check-dps` | Validate all DPs |
+| `yada reset` | Reset all tasks |
 
+YADA transforms declarative DPs into executable workflows with deterministic ordering and state tracking.
 
-Meaning:
-
-You aren’t recomputing graph order every time.
-
-You’re storing compiled state.
-
-You're tracking execution progress externally.
-
-This is closer to a build system (like make) than a todo list.
-
-What This System Resembles
-
-Your idea structurally resembles:
-
-Directed Acyclic Graph engines
-
-Terraform planning
-
-Build systems (Make / Bazel)
-
-Airflow DAG resolution
-
-Package managers resolving dependency trees
-
-But you’re applying it to design logic modularization.
-
-Key Design Decisions You’ll Need to Clarify
-
-Here’s where it becomes serious:
-
-1️⃣ What happens on circular dependency?
-
-Hard error? Or allow priority override?
-
-2️⃣ Is dependency resolution:
-
-Strict DAG only?
-
-Or soft dependency with optional fallback?
-
-3️⃣ Does priority:
-
-Override dependency?
-
-Or only resolve same-level fork?
-
-4️⃣ Does phase:
-
-Enforce sequential blocks?
-
-Or only classification?
-
-5️⃣ Does order: true mean:
-
-Auto-chain subdps 1→2→3?
-
-Or validate declared dependencies match numeric order?
-
-What I Think You’re Really Trying to Build
-
-Based on your past architectural thinking:
-
-You want:
-
-A deterministic, programmable planning intelligence that removes ambiguity from complex design workflows.
-
-And eventually:
-
-Turn this into a reusable orchestration system.
-
-Maybe integrate it into dev tooling.
-
-Maybe make it agent-driven later.
-
-This is not just a planning module.
-
-This is a workflow compiler engine.
-
-One Important Observation
-
-Right now your system assumes:
-
-Final output must be linear.
-
-But real dependency graphs allow parallelizable nodes.
-
-You may eventually want:
-
-level 1: dp1
-level 2: dp2, dp3 (parallel)
-level 3: dp4
-
-
-Instead of strict 1→2→3 flattening.
-
-If you flatten too early, you lose optimization potential.
-
-My Summary of Your Intent
-
-You are designing:
-
-A declarative planning language (.yada)
-
-A compiler (yada compile)
-
-A validator (--check-dps)
-
-A state manager (mark, status)
-
-A deterministic workflow resolver
-
-Yes. I understand it.
-
-And structurally, it’s solid.
-
-If you want next step, we can:
-
-Formalize graph resolution rules
-
-Design internal data structure
-
-Define deterministic topological sorting logic
-
-Identify edge-case failures
-
-Or evaluate if this should evolve into something bigger
-
-Where do you want to take it?
-
-yes the .yadasmith will have tasks in sequence like levels like u described
-level 1: dp1
-level 2: dp2, dp3 (parallel)
-level 3: dp4
-
-
-so help me convert this into a proper library
-final state: production usable via 'npm install yada'
-
-Good. Now this becomes engineering.
-
-You’re not building a CLI toy — you’re building a deterministic DAG orchestration library with a CLI interface.
-
-Let’s convert YADA into something production-grade.
-
-0️⃣ Define What YADA Actually Is
-
-Before writing code, we freeze the abstraction:
-
-YADA = Declarative workflow graph engine with deterministic compilation and state tracking.
-
-It must provide:
-
-Graph parsing
-
-Dependency validation
-
-Cycle detection
-
-Priority-based fork resolution
-
-Parallel level grouping
-
-Status persistence
-
-CLI interface
-
-Programmatic API
-
-Two interfaces:
-
-1) CLI  -> yada compile
-2) API  -> import { compile } from "yada"
-
-1️⃣ Production Architecture
-
-Final npm package structure:
-
-yada/
-├── package.json
-├── src/
-│   ├── index.ts
-│   ├── core/
-│   │   ├── parser.ts
-│   │   ├── graph.ts
-│   │   ├── resolver.ts
-│   │   ├── validator.ts
-│   │   ├── scheduler.ts
-│   │   └── state.ts
-│   ├── cli/
-│   │   ├── index.ts
-│   │   ├── commands/
-│   │   │   ├── compile.ts
-│   │   │   ├── check.ts
-│   │   │   ├── mark.ts
-│   │   │   ├── status.ts
-│   │   │   └── reset.ts
-│   └── types/
-│       └── dp.ts
-└── dist/
+Ready to use: `npm install yada`
