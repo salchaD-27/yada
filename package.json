@@ -1,18 +1,38 @@
 {
-  "name": "yada",
+  "name": "yada-kit",
   "version": "1.0.0",
-  "description": "Yet Another Designing Assistant - Declarative workflow graph engine with deterministic compilation and state tracking",
+  "description": "Yet Another Devising Assistant - Declarative workflow graph engine with deterministic compilation and state tracking",
   "license": "ISC",
   "author": "",
   "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
-  "bin": {
-    "yada": "./bin/yada.js"
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./cli": {
+      "require": "./dist/cli/index.js",
+      "import": "./dist/cli/index.js",
+      "types": "./dist/cli/index.d.ts"
+    }
   },
+  "bin": {
+    "yada": "dist/cli/index.js"
+  },
+  "files": [
+    "dist/",
+    "bin/",
+    "README.md"
+  ],
   "scripts": {
-    "build": "tsc",
+    "build": "rollup -c",
+    "build:watch": "rollup -c --watch",
     "dev": "ts-node src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "workflow",
@@ -26,9 +46,21 @@
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^29.0.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.10.0",
-    "typescript": "^5.3.0",
-    "ts-node": "^10.9.2"
-  }
+    "rollup": "^4.57.1",
+    "rollup-plugin-typescript2": "^0.36.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/salchaD-27/yada"
+  },
+  "bugs": {
+    "url": "https://github.com/salchaD-27/yada/issues"
+  },
+  "homepage": "https://github.com/salchaD-27/yada#readme"
 }

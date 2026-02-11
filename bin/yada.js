@@ -2,13 +2,8 @@
 
 /**
  * YADA CLI Entry Point
+ * Uses the bundled CLI from rollup for faster startup
  */
 
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const { runCli } = await import(join(__dirname, '../dist/cli/index.js'));
+const { runCli } = require('../dist/cli/index.js');
 runCli(process.argv.slice(2));

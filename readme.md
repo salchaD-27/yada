@@ -1,382 +1,637 @@
-# YADA - Complete Usage Guide
+# YADA - Yet Another Designing Assistant
+
+**Declarative workflow graph engine with deterministic compilation and state tracking**
+
+[![npm](https://img.shields.io/npm/v/yada-kit)](https://www.npmjs.com/package/yada-kit)
+[![License](https://img.shields.io/npm/l/yada-kit)](LICENSE)
 
 ## What is YADA?
 
-**YADA (Yet Another Designing Assistant)** is a deterministic DAG orchestration library with CLI interface. It compiles declarative Design Prescriptions (DPs) into executable workflow graphs.
+YADA transforms declarative **Design Prescriptions (DPs)** into executable workflow graphs. It handles dependency resolution, state tracking, and deterministic task ordering automatically.
 
-### Key Features
+### What can you use it for?
 
-- Production-ready npm package - Install via `npm install yada`
-- Dependency Graph Engine - Parses and resolves complex dependencies
-- Deterministic Compilation - Predictable execution order based on priority
-- Parallel Level Grouping - Identifies parallelizable tasks
-- State Persistence - Tracks progress with `.yadasmith` file
-- CLI & Programmatic API - Use as CLI tool or import as library
+- **Project Planning**: Define tasks as declarative YAML files
+- **Workflow Orchestration**: Build dependency-aware task pipelines
+- **Progress Tracking**: Persist and resume workflow state
+- **CI/CD Pipelines**: Integrate as a library for workflow management
 
 ---
 
-## Installation
+## Quick Start
+
+### Installation
 
 ```bash
-# From source
-cd /Users/salchad27/Desktop/TAG/yada
-npm install
-npm run build
+# Install globally for CLI usage
+npm install -g yada-kit
 
-# Make globally available
-npm link
+# Or install locally for programmatic use
+npm install yada-kit
+```
 
-# Now use from anywhere
+### CLI Usage
+
+```bash
+# Initialize a new workflow project
+mkdir my-workflow && cd my-workflow
+mkdir dps
+
+# Create your first Design Prescription
+cat > dps/01-setup.yada << 'EOF'
+name: Project Setup
+nature: standard
+priority: 100
+description: Initial project configuration
+
+subdps:
+  order: true
+  1:
+    name: Initialize Repository
+    type: specification
+    description: Set up git repository
+    workflow:
+      - git init
+      - create .gitignore
+
+  2:
+    name: Install Dependencies  
+    type: dependency
+    dependencies:
+      - 1
+EOF
+
+# Compile and run
+yada compile
+yada status
+
+# Mark tasks as complete
+yada --mark 01-setup
+yada status
+```
+
+### Programmatic Usage
+
+```bash
+npm install yada-kit
+```
+
+```typescript
+import { parseAll, resolve, writeYadasmith } from 'yada-kit';
+
+const rootDir = './my-project';
+
+// Parse all Design Prescriptions
+const { dps, errors } = parseAll(rootDir);
+if (errors.length > 0) {
+  console.error('Parse errors:', errors);
+  process.exit(1);
+}
+
+// Resolve dependency graph
+const result = resolve(dps, true);
+
+// Write compiled workflow
+writeYadasmith(rootDir, result.yadasmith);
+
+console.log(\`Compiled \${result.yadasmith.levels.length} parallel levels\`);
+```
+
+---
+
+## Installation Options
+
+### Option 1: Global CLI
+
+```bash
+npm install -g yada-kit
+
+# Now use from any directory
 yada --help
 ```
 
----
+### Option 2: Local Development Dependency
 
-## Project Structure
+```bash
+npm install --save-dev yada-kit
 
-```
-your-project/
-├── dps/                          # Design Prescriptions directory
-│   ├── 01-setup.yada
-│   ├── 02-architecture.yada
-│   └── 03-implementation.yada
-├── .yadasmith                    # Compiled workflow (auto-generated)
-├── graph.svg                      # Visual dependency graph (auto-generated)
-└── .yadamap                      # Graph documentation (auto-generated)
+# Add to package.json scripts
+"scripts": {
+  "workflow": "yada compile && yada status"
+}
 ```
 
+### Option 3: Programmatic Library
+
+```bash
+npm install yada-kit
+
+# Use in your Node.js/TypeScript project
+import { parseAll, validateAll, resolve } from 'yada-kit';
+```
+
 ---
 
-## Creating Design Prescriptions (DPs)
+## Creating Design Prescriptions
 
-### Basic DP Structure
+Design Prescriptions (DPs) are YAML files that define tasks and their dependencies.
 
-```yaml
-name: my-feature
+### Example DP
+
+\`\`\`yaml
+name: Backend API
 nature: standard
 phase: development
-priority: 50
-description: |
-  /* Description of what this DP accomplishes */
+priority: 80
+description: REST API implementation
 
-dependencies:                    # External DP dependencies
-  - previous-feature
+dependencies:
+  - 01-database-schema  # Must complete before this
 
 subdps:
-  order: false                   # true = chain subdps 1→2→3
+  order: false
   1:
-    name: sub-feature-1
-    type: specification          # specification = has workflow steps
-    description: |
-      /* Description */
+    name: Set Up Express
+    type: specification
+    description: Initialize Express server
     workflow:
-      - step 1
-      - step 2
-    intents:
-      - Goal achieved
+      - npm init -y
+      - npm install express
 
   2:
-    name: sub-feature-2
-    type: dependency            # dependency = has prerequisites
-    nature: required             # optional | required
-    description: |
-      /* Description */
+    name: Create Routes
+    type: dependency
+    nature: required
+    description: Define API endpoints
     dependencies:
-      - sub-feature-1           # Local subdp dependency
+      - 1
     intents:
-      - Another goal
-```
+      - CRUD endpoints created
+\`\`\`
 
-### DP Fields Reference
+### DP Structure Reference
 
-| Field | Required | Values | Description |
-|-------|----------|--------|-------------|
-| `name` | Yes | string | Human-readable identifier |
-| `nature` | Yes | `module` \| `standard` | Module = foundational, Standard = regular |
-| `phase` | No | string | Phase classification |
-| `priority` | Yes | number (0-100) | Higher = executed first at same level |
-| `description` | Yes | string | What this DP accomplishes |
-| `dependencies` | No | DP IDs | External DP references |
-| `subdps.order` | Yes | boolean | Chain subdps numerically? |
-| `subdp.type` | Yes | `specification` \| `dependency` | Specification = has workflow, Dependency = has deps |
-| `subdp.nature` | No | `optional` \| `required` | Only for type=dependency |
-| `subdp.workflow` | No | string[] | Steps (only for type=specification) |
-| `subdp.dependencies` | No | string[] | Prerequisites (for type=dependency) |
-| `subdp.intents` | No | string[] | Goals/intended outcomes |
+| Field | Required | Description |
+|-------|----------|-------------|
+| \`name\` | Yes | Human-readable identifier |
+| \`nature\` | Yes | \`module\` (foundational) or \`standard\` (regular) |
+| \`priority\` | Yes | Number 0-100; higher = earlier execution |
+| \`description\` | Yes | What this DP accomplishes |
+| \`dependencies\` | No | Array of DP IDs that must complete first |
+| \`subdps\` | Yes | Nested tasks within this DP |
+| \`subdps.order\` | Yes | \`true\` = chain subdps sequentially |
+| \`subdp.type\` | Yes | \`specification\` (has steps) or \`dependency\` (has prerequisites) |
 
-### Naming Convention
+### SubDP Reference
 
-IMPORTANT: DP filenames MUST use numbered IDs:
-
-```
-01-project-foundation.yada
-02-architecture-design.yada
-03-infrastructure-setup.yada
-```
-
-Then reference them with those IDs:
-```yaml
-dependencies:
-  - 01-project-foundation    # Correct
-  - project-foundation        # Will fail
-```
+\`\`\`yaml
+subdps:
+  order: false  # false = all run in parallel at same level
+  
+  1:
+    name: Task Name
+    type: specification  # or 'dependency'
+    description: What this does
+    workflow:            # Only for type=specification
+      - step 1
+      - step 2
+    dependencies: []    # Only for type=dependency
+    intents: []          # Goals achieved
+\`\`\`
 
 ---
 
 ## CLI Commands
 
-### Compile Command
+### \`yada compile\`
 
-Parses all DPs, validates dependencies, builds graph, writes `.yadasmith`.
+Parses all DPs and generates the workflow graph.
 
-```bash
-# Basic compilation
-yada compile
+\`\`\`bash
+yada compile              # Basic compilation
+yada compile --verbose   # Detailed output
+yada compile --force     # Overwrite existing
+\`\`\`
 
-# Verbose output
-yada compile --verbose
-yada compile -V
+**Output:**
+- \`.yadasmith\` - Compiled workflow state file
 
-# Force recompile (overwrite existing)
-yada compile --force
-```
+### \`yada status\`
 
-Output Files Generated:
-- `.yadasmith` - Compiled workflow state
+View current progress through the workflow.
 
-### Status Command
+\`\`\`bash
+yada status              # Human-readable progress
+yada status --verbose    # Detailed view
+yada status --json      # JSON output for scripts
+\`\`\`
 
-Shows current workflow progress.
+### \`yada --mark <task-id>\`
 
-```bash
-# Basic status
-yada status
+Mark a task as completed and update progress.
 
-# Verbose output
-yada status --verbose
-yada status -V
+\`\`\`bash
+yada --mark 01-setup           # Mark specific task
+yada --mark 03-api-development # Mark by DP filename (without .yada)
+\`\`\`
 
-# JSON output (for scripts)
-yada status --json
-```
+### \`yada --check-dps\`
 
-### Mark Command
+Validate all DPs for errors.
 
-Mark a task as completed.
+\`\`\`bash
+yada --check-dps              # Check all
+yada --check-dp 01-setup      # Check specific DP
+yada --check-dps --verbose    # Detailed validation
+\`\`\`
 
-```bash
-# Mark specific task
-yada --mark 01-project-foundation
-```
-
-How it works:
-- Marks the specified task as `completed`
-- Tasks before it in the execution order remain completed
-- Tasks after it remain `pending`
-
-### Check Commands
-
-Validate DPs for errors and missing dependencies.
-
-```bash
-# Check all DPs
-yada --check-dps
-
-# Check specific DP
-yada --check-dp 01-setup.yada
-
-# Check with verbose output
-yada --check-dps --verbose
-```
-
-What it validates:
+**Validates:**
 - Required fields present
 - Dependencies exist
 - No circular dependencies
-- Subdp types valid
-- Priority values valid
+- Type and nature values valid
 
-### Reset Command
+### \`yada reset\`
 
-Reset all tasks to pending.
+Reset all progress to pending.
 
-```bash
-# Reset with confirmation
-yada reset
+\`\`\`bash
+yada reset              # With confirmation
+yada reset --force      # Skip confirmation
+\`\`\`
 
-# Force reset (skip confirmation)
-yada reset --force
-```
+### \`yada --help\` / \`yada -h\`
 
-### Help Command
+Show available commands and options.
 
-```bash
+\`\`\`bash
 yada --help
-yada -h
-```
-
-### Version Command
-
-```bash
-yada --version
-yada -v
-```
+\`\`\`
 
 ---
 
 ## Programmatic API
 
-### Import YADA as Library
+### Import the Library
 
-```typescript
-import {
-  parseAll,
-  validateAll,
-  resolve,
-  readYadasmith,
-  writeYadasmith,
-  getStatus,
-  markOne,
-  resetAll
-} from 'yada';
-```
+\`\`\`typescript
+// ES Modules
+import * as yada from 'yada-kit';
 
-### Usage Examples
+// CommonJS
+const yada = require('yada-kit');
+\`\`\`
 
-#### Compile Workflow
+### Core Functions
 
-```typescript
-import { parseAll, validateAll, resolve, writeYadasmith } from 'yada';
+#### \`parseAll(rootDir)\`
 
-const rootDir = './my-project';
+Parse all DPs from a directory.
 
-// 1. Parse all DPs
-const parseResult = parseAll(rootDir);
-if (parseResult.errors.length > 0) {
-  console.error('Parse errors:', parseResult.errors);
-  process.exit(1);
+\`\`\`typescript
+const { dps, errors } = parseAll('./my-project');
+console.log(\`Parsed \${dps.length} Design Prescriptions\`);
+\`\`\`
+
+#### \`validateAll(dps)\`
+
+Validate parsed DPs.
+
+\`\`\`typescript
+const result = validateAll(dps);
+if (!result.valid) {
+  console.error('Errors:', result.errors);
+  console.error('Warnings:', result.warnings);
 }
+\`\`\`
 
-// 2. Validate DPs
-const validationResult = validateAll(parseResult.dps);
-if (!validationResult.valid) {
-  console.error('Validation errors:', validationResult.errors);
-  process.exit(1);
-}
+#### \`resolve(dps, usePriority)\`
 
-// 3. Resolve graph
-const resolveResult = resolve(parseResult.dps, true);
+Build the dependency graph and calculate execution levels.
 
-// 4. Write output
-writeYadasmith(rootDir, resolveResult.yadasmith);
+\`\`\`typescript
+const result = resolve(dps, true);
+console.log(\`Levels: \${result.yadasmith.levels.length}\`);
+console.log(\`Errors: \${result.errors}\`);
+\`\`\`
 
-console.log(`Compiled ${resolveResult.yadasmith.levels.length} levels`);
-```
+#### \`writeYadasmith(rootDir, yadasmith)\`
 
-#### Check Task Status
+Write compiled workflow to \`.yadasmith\` file.
 
-```typescript
-import { readYadasmith, getStatus, getTaskById } from 'yada';
+\`\`\`typescript
+writeYadasmith('./my-project', result.yadasmith);
+\`\`\`
 
-const rootDir = './my-project';
-const status = getStatus(rootDir);
+#### \`getStatus(rootDir)\`
 
-console.log(`${status.completed}/${status.total} tasks completed`);
+Get current workflow progress.
+
+\`\`\`typescript
+const status = getStatus('./my-project');
+console.log(\`\${status.completed}/\${status.total} complete\`);
 
 if (status.nextTask) {
-  console.log('Next:', status.nextTask.ref);
+  console.log('Next task:', status.nextTask.ref);
 }
-```
+\`\`\`
 
 ---
 
-## Dependency Resolution Logic
+## Project Structure
 
-### How Levels Are Calculated
+\`\`\`
+my-project/
+├── dps/                          # Design Prescriptions
+│   ├── 01-initialization.yada
+│   ├── 02-architecture.yada
+│   └── 03-development.yada
+├── .yadasmith                    # Compiled workflow (auto-generated)
+└── package.json
+\`\`\`
 
-1. Build Graph - Create adjacency list from DPs
-2. Detect Cycles - Fail if circular dependencies found
-3. Calculate In-Degrees - Count dependencies per node
-4. Start with Level 1 - Nodes with no dependencies
-5. BFS Propagation - Level = max(parent level) + 1
-6. Group by Level - Parallel tasks same level
+### File Naming
 
-### Priority Resolution
+DP files must be numbered:
+- \`01-setup.yada\`
+- \`02-config.yada\`
+- \`03-build.yada\`
+
+Reference them without the extension:
+\`\`\`yaml
+dependencies:
+  - 01-setup  # Correct
+  - setup     # Incorrect
+\`\`\`
+
+---
+
+## Workflow Execution
+
+### How Levels Work
+
+YADA groups tasks into **levels** where all tasks at the same level can execute in parallel.
+
+**Example:**
+\`\`\`
+Level 1: 01-setup → 02-config       (No dependencies, run in parallel)
+    ↓
+Level 3: 03-api                     (Depends on both Level 1 tasks)
+    ↓
+Level 4: 04-frontend                (Depends on 03-api)
+\`\`\`
+
+### Priority Within Levels
 
 When multiple tasks are at the same level:
-1. Higher `priority` value executes first
-2. Alphabetical order as tiebreaker
+1. Higher \`priority\` value executes first
+2. Alphabetical order breaks ties
 
 ---
 
-## Best Practices
+## Real-World Example
 
-1. Number Your DPs Sequentially
-2. Use Clear Priorities (90-100: Critical, 70-89: High, 50-69: Standard, 1-29: Optional)
-3. Group Related Subdps with `order: true`
-4. Document Intents Clearly
+### Microservices Project
+
+\`\`\`bash
+mkdir microservices && cd microservices
+mkdir dps
+\`\`\`
+
+**\`dps/01-database.yada\`**
+\`\`\`yaml
+name: Database Setup
+nature: module
+priority: 100
+description: Database infrastructure
+
+subdps:
+  order: true
+  1:
+    name: Provision Database
+    type: specification
+    workflow:
+      - docker-compose up -d
+\`\`\`
+
+**\`dps/02-backend.yada\`**
+\`\`\`yaml
+name: Backend API
+nature: standard
+priority: 80
+description: REST API development
+
+dependencies:
+  - 01-database
+
+subdps:
+  order: false
+  1:
+    name: User Service
+    type: specification
+    workflow:
+      - npm init
+      - create routes/users.ts
+\`\`\`
+
+**\`dps/03-frontend.yada\`**
+\`\`\`yaml
+name: Frontend App
+nature: standard
+priority: 60
+description: Web interface
+
+dependencies:
+  - 02-backend
+
+subdps:
+  1:
+    name: UI Components
+    type: specification
+    workflow:
+      - create App.tsx
+\`\`\`
+
+\`\`\`bash
+yada compile        # Build workflow
+yada status         # Check progress
+yada --mark 01-database
+yada --mark 02-backend
+\`\`\`
 
 ---
 
-## Examples
+## Common Patterns
 
-### Simple Example (3 DPs)
+### Sequential Subdps
 
-```bash
-cd example
-yada compile --verbose
-yada status
-yada --mark 01-setup
-yada status
-```
+Use \`subdps.order: true\` to chain subdps 1 → 2 → 3:
 
-### Enterprise Example (15 DPs)
+\`\`\`yaml
+subdps:
+  order: true  # Must complete 1 before 2, 2 before 3
+  1:
+    name: Step 1
+    type: specification
+  2:
+    name: Step 2
+    type: dependency
+    dependencies:
+      - 1
+  3:
+    name: Step 3
+    type: dependency
+    dependencies:
+      - 2
+\`\`\`
 
-```bash
-cd example2
-yada compile --verbose
-yada status --json
-yada --check-dps
-yada --mark 01-project-foundation
-yada status
-```
+### Parallel Subdps
+
+Use \`subdps.order: false\` to run all at once:
+
+\`\`\`yaml
+subdps:
+  order: false  # All run at same time
+  1:
+    name: Task A
+    type: specification
+  2:
+    name: Task B  
+    type: specification
+\`\`\`
+
+### Cross-DP Dependencies
+
+\`\`\`yaml
+# In 02-backend.yada
+dependencies:
+  - 01-database  # Complete 01-database before 02-backend
+\`\`\`
 
 ---
 
 ## Troubleshooting
 
 ### "DP file not found"
-Ensure filename matches exactly (case-sensitive):
-```bash
+
+Ensure exact filename match:
+\`\`\`bash
 # Wrong
 yada --check-dp Setup.yada
 yada --check-dp 1-setup
 
-# Correct
+# Correct  
 yada --check-dp 01-setup.yada
-```
+\`\`\`
 
 ### "Dependency not found"
-Check that:
-1. Dependency DP file exists
-2. Filename uses numbered ID
-3. ID format matches exactly (e.g., `01-setup` not `setup`)
+
+1. Verify DP file exists
+2. Check numbered ID format: \`01-setup\` not \`setup\`
+3. Confirm exact match (case-sensitive)
 
 ### "Circular dependency detected"
-Review dependency chain and remove one of the circular references.
+
+Example circular chain:
+\`\`\`
+01 → 02 → 03 → 01
+\`\`\`
+
+Remove one of the circular references in your DPs.
+
+### "Missing required field"
+
+Required fields per DP:
+- \`name\`
+- \`nature\`
+- \`priority\`
+- \`description\`
+- \`subdps.order\`
+
+### Commands not found after install
+
+\`\`\`bash
+# Global install
+npm install -g yada-kit
+
+# Ensure npm global bin is in PATH
+export PATH="$(npm global bin):$PATH"
+
+# Or use npx
+npx yada-kit --help
+\`\`\`
 
 ---
 
-## Summary
+## Best Practices
 
-| Command | Purpose |
-|---------|---------|
-| `yada compile` | Parse & build workflow |
-| `yada status` | Show progress |
-| `yada --mark <id>` | Mark task complete |
-| `yada --check-dps` | Validate all DPs |
-| `yada reset` | Reset all tasks |
+1. **Number sequentially**: 01, 02, 03...
+2. **Set clear priorities**: 
+   - 90-100: Critical path
+   - 70-89: High priority
+   - 50-69: Standard
+   - 1-29: Optional/deferred
+3. **Document intents**: Help future maintainers understand goals
+4. **Group related work**: Put related tasks in same DP
+5. **Use subdps**: Break complex DPs into smaller tasks
 
-YADA transforms declarative DPs into executable workflows with deterministic ordering and state tracking.
+---
 
-Ready to use: `npm install yada`
+## API Reference
+
+### CLI Options
+
+| Option | Description |
+|--------|-------------|
+| \`-v, --version\` | Show version |
+| \`-h, --help\` | Show help |
+| \`-V, --verbose\` | Verbose output |
+| \`--force\` | Force overwrite |
+| \`--json\` | JSON output |
+| \`--mark <id>\` | Mark task complete |
+| \`--check-dp <file>\` | Check specific DP |
+| \`--check-dps\` | Check all DPs |
+
+### Library Exports
+
+\`\`\`typescript
+// Parsing
+parseAll(rootDir: string): ParseResult
+parseByName(rootDir: string, name: string): ParsedDP | null
+
+// Validation
+validateAll(dps: ParsedDP[]): ValidationResult
+validateDP(dp: ParsedDP): ValidationResult
+
+// Resolution
+resolve(dps: ParsedDP[], usePriority: boolean): ResolveResult
+
+// State Management
+readYadasmith(rootDir: string): Yadasmith
+writeYadasmith(rootDir: string, yadasmith: Yadasmith): void
+getStatus(rootDir: string): Status
+
+// CLI
+runCli(args: string[]): void
+\`\`\`
+
+---
+
+## License
+
+ISC License
+
+---
+
+## Contributing
+
+Issues and PRs welcome on [GitHub](https://github.com/salchaD-27/yada)
+
+---
+
+**Ready to plan? Start with:**
+\`\`\`bash
+npm install -g yada-kit
+mkdir my-workflow && cd my-workflow
+mkdir dps
+\`\`\`
